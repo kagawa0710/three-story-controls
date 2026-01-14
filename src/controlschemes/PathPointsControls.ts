@@ -1,5 +1,5 @@
 import { EventDispatcher } from 'three'
-import { BaseControls, UpdatePOIsEvent, ExitPOIsEvent } from './BaseControls'
+import { BaseControls, UpdatePOIsEvent, ExitPOIsEvent, POIsControlsEventMap } from './BaseControls'
 import { CameraRig } from '../CameraRig'
 import { KeyboardAdaptor } from '../adaptors/KeyboardAdaptor'
 import { WheelAdaptor } from '../adaptors/WheelAdaptor'
@@ -75,7 +75,7 @@ const defaultProps: PathPointsControlsProps = {
  * })
  * ```
  */
-export class PathPointsControls extends EventDispatcher implements BaseControls {
+export class PathPointsControls extends EventDispatcher<POIsControlsEventMap> implements BaseControls {
   readonly cameraRig: CameraRig
   private wheelAdaptor: WheelAdaptor
   private swipeAdaptor: SwipeAdaptor
