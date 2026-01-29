@@ -26,7 +26,7 @@ export interface KeyboardAdaptorContinuousEvent extends ContinuousEvent {
  * A discrete adaptor works as a trigger - only firing events on keyup,
  * whereas a continuous adaptor continuously fires events on keydown
  * */
-export declare type KeyboardAdaptorType = 'discrete' | 'continuous';
+export type KeyboardAdaptorType = 'discrete' | 'continuous';
 /**
  * Key-value pairs of semantic labels associated with an array of keys (corresponding to `KeybordEvent.keys` values)
  */

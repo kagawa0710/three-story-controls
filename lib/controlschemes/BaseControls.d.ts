@@ -20,4 +20,8 @@ export interface UpdatePOIsEvent {
     upcomingIndex: number;
     progress: number;
 }
+export type POIsControlsEventMap = {
+    ExitPOIs: ExitPOIsEvent;
+    update: UpdatePOIsEvent;
+};
 //# sourceMappingURL=BaseControls.d.ts.map

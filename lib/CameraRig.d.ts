@@ -1,4 +1,4 @@
-import { Vector3, Quaternion, Camera, Scene, AnimationClip, EventDispatcher } from 'three';
+import { Vector3, Quaternion, Camera, Scene, AnimationClip, EventDispatcher, EulerOrder } from 'three';
 /**
  * Event: Fired when CameraRig starts a transition
  * @example
@@ -31,6 +31,11 @@ export interface CameraMoveUpdateEvent {
 export interface CameraMoveEndEvent {
     type: 'CameraMoveEnd';
 }
+export type CameraRigEventMap = {
+    CameraMoveStart: CameraMoveStartEvent;
+    CameraMoveUpdate: CameraMoveUpdateEvent;
+    CameraMoveEnd: CameraMoveEndEvent;
+};
 /**
  * Enum of camera actions used to control a {@link three-story-controls#CameraRig}
  */
@@ -109,7 +114,7 @@ export interface ActionAxes {
  *
  * See {@link three-story-controls#CameraMoveStartEvent}, {@link three-story-controls#CameraMoveUpdateEvent} and {@link three-story-controls#CameraMoveEndEvent} for emitted event signatures.
  */
-export declare class CameraRig extends EventDispatcher {
+export declare class CameraRig extends EventDispatcher<CameraRigEventMap> {
     readonly camera: Camera;
     readonly scene: Scene;
     private body;
@@ -181,7 +186,7 @@ export declare class CameraRig extends EventDispatcher {
     /**
      * Get the rotation order as a string compatible with what three.js uses
      */
-    getRotationOrder(): string;
+    getRotationOrder(): EulerOrder;
     /**
      * Whether the camera is currently attached to the rig
      */

@@ -1,5 +1,5 @@
 import { EventDispatcher, Vector3, Quaternion } from 'three';
-import { BaseControls } from './BaseControls';
+import { BaseControls, POIsControlsEventMap } from './BaseControls';
 import { CameraRig } from '../CameraRig';
 export interface StoryPointMarker {
     /** Camera position */
@@ -51,7 +51,7 @@ export interface StoryPointsControlsProps {
  * document.querySelector('.prevBtn').on('click', () => controls.prevPOI() )
  * ```
  */
-export declare class StoryPointsControls extends EventDispatcher implements BaseControls {
+export declare class StoryPointsControls extends EventDispatcher<POIsControlsEventMap> implements BaseControls {
     readonly cameraRig: CameraRig;
     private keyboardAdaptor;
     private pois;

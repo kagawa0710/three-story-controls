@@ -1,5 +1,5 @@
 import { EventDispatcher } from 'three';
-import { BaseControls } from './BaseControls';
+import { BaseControls, POIsControlsEventMap } from './BaseControls';
 import { CameraRig } from '../CameraRig';
 export interface PathPointMarker {
     frame: number;
@@ -61,7 +61,7 @@ export interface PathPointsControlsProps {
  * })
  * ```
  */
-export declare class PathPointsControls extends EventDispatcher implements BaseControls {
+export declare class PathPointsControls extends EventDispatcher<POIsControlsEventMap> implements BaseControls {
     readonly cameraRig: CameraRig;
     private wheelAdaptor;
     private swipeAdaptor;

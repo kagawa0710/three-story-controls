@@ -22,7 +22,7 @@ export interface WheelAdaptorContinuousEvent extends ContinuousEvent {
  * A discrete adaptor works as a trigger - only firing events when wheel events pass a given threshold,
  * whereas a continuous adaptor continuously fires events on wheel
  * */
-export declare type WheelAdaptorType = 'discrete' | 'continuous';
+export type WheelAdaptorType = 'discrete' | 'continuous';
 /**
  * Properties that can be passed to the {@link three-story-controls#WheelAdaptor} constructor
  */
