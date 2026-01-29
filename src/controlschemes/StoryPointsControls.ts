@@ -1,5 +1,5 @@
 import { EventDispatcher, Vector3, Quaternion } from 'three'
-import { BaseControls, UpdatePOIsEvent, ExitPOIsEvent } from './BaseControls'
+import { BaseControls, UpdatePOIsEvent, ExitPOIsEvent, POIsControlsEventMap } from './BaseControls'
 import { KeyboardAdaptor } from '../adaptors/KeyboardAdaptor'
 import { CameraRig } from '../CameraRig'
 
@@ -60,7 +60,7 @@ const defaultProps: StoryPointsControlsProps = {
  * document.querySelector('.prevBtn').on('click', () => controls.prevPOI() )
  * ```
  */
-export class StoryPointsControls extends EventDispatcher implements BaseControls {
+export class StoryPointsControls extends EventDispatcher<POIsControlsEventMap> implements BaseControls {
   readonly cameraRig: CameraRig
   private keyboardAdaptor: KeyboardAdaptor
   private pois: StoryPointMarker[]

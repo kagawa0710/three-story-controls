@@ -1,5 +1,4 @@
 import typescript from '@rollup/plugin-typescript'
-import eslint from '@rbnlffl/rollup-plugin-eslint'
 import { terser } from 'rollup-plugin-terser'
 import postcss from 'rollup-plugin-postcss'
 import nested from 'postcss-nested'
@@ -11,7 +10,6 @@ const sourcemap = true
 
 const commonPlugins = () => {
   const plugins = [
-    eslint(),
     typescript(),
     postcss({
       extensions: ['.css'],
