@@ -1,120 +1,68 @@
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Path Point Controls</title>
+  <title>Path Point Controls | Three Story Controls</title>
+  <link rel="stylesheet" href="../shared-styles.css">
   <script async src="https://unpkg.com/es-module-shims@0.11.1/dist/es-module-shims.js"></script>
   <script type="importmap-shim">
   {
     "imports": {
-      "three": "https://cdn.skypack.dev/three@0.137.0",
+      "three": "https://cdn.skypack.dev/three@0.160.0",
       "gsap": "https://cdn.skypack.dev/gsap@3.6.1",
       "three-story-controls" : "../../../dist/three-story-controls.esm.js"
     }
   }
   </script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      width: 100vw;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .canvas-parent {
-      width: 100vw;
-      height: 100vh;
-      touch-action: none;
-    }
-
-    .info {
+    .caption-container {
       position: fixed;
-      top: 0;
-      right: 0;
-      width: 300px;
-      padding: 1rem 2rem;
-      font-family: 'Courier New', Courier, monospace;
-      line-height: 1.2;
-      background-color: white;
-      color: black;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 100;
+    }
+    .caption-container p {
+      padding: 16px 24px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: #fff;
+      font-size: 14px;
+      max-width: 400px;
+      text-align: center;
     }
 
-    .nav {
-      position: fixed;
-      top: 45%;
-      background-color: rgb(184, 184, 184);
-      padding: 1rem;
-      font-family: sans-serif;
-      font-size: 1rem;
-      font-weight: 100;
-      cursor: pointer;
-    }
-
-    .next {
-      right: 0;
-    }
-
-    .prev {
-      left: 0;
-    }
-
-    .caption {
-      position: fixed;
-      bottom: 8rem;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-
-    .caption p {
-      padding: 1rem;
-      color: black;
-      background-color: rgb(184, 184, 184);
-      font-family: sans-serif;
-    }
-
-    #button {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      padding: 12px;
-      border-radius: 50%;
-      margin-bottom: 0px;
-      background-color: #FFF;
-      opacity: .9;
-      z-index: 999;
-      box-shadow: 0 0 4px rgb(0 0 0 / 15%);
-    }
-
-    @media (max-width:480px) {
-      .caption { display: none; }
-      .info { width: 100%; box-sizing: border-box; }
+    @media (max-width: 640px) {
+      .caption-container { display: none; }
     }
   </style>
 </head>
+<body class="demo-page">
+  <div class="canvas-parent"></div>
 
-<body>
-  <div class='canvas-parent'>
+  <a href="../index.html" class="back-link">Back to Demos</a>
+
+  <div class="info-panel">
+    <h2>PathPoint Controls</h2>
+    <p>Transition between specific frames of a pre-defined camera animation path.</p>
+    <div class="controls">
+      <p><kbd>Scroll</kbd> or <kbd>Swipe</kbd> - Navigate between points</p>
+      <p><kbd>Arrow keys</kbd> - Alternative navigation</p>
+    </div>
   </div>
 
-  <p class='info'>
-    Use the mouse wheel/swipe to transition between points. (or arrow keys)
-  </p>
-
-  <div class='caption'>
-    <p>
-    </p>
+  <div class="caption-container">
+    <p></p>
   </div>
 
-  <a id="button" target="_blank" href="https://github.com/nytimes/three-story-controls/tree/main/examples/demos/path-points" title="View source code for demo">
-    <img src="../ic_code_black_24dp.svg"/>
+  <a class="source-btn" target="_blank" href="https://github.com/kagawa0710/three-story-controls/tree/dev/examples/demos/path-points" title="View source code">
+    <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
   </a>
-  <script type='module-shim' src='script.js'></script>
-</body>
 
+  <script type="module-shim" src="script.js"></script>
+</body>
 </html>

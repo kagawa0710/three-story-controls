@@ -35,7 +35,7 @@
   },
   "peerDependencies": {
     "gsap": ">= 3.6",
-    "three": ">= 0.129"
+    "three": ">= 0.160"
   },
   "devDependencies": {
     "@microsoft/api-documenter": "^7.28.2",

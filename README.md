@@ -11,21 +11,23 @@
     <br><br>
   </p>
   <img alt="License" src="https://img.shields.io/badge/License-Apache%202.0-yellow.svg" />
-  <a href="https://cloud.drone.io/nytimes/three-story-controls"><img alt="Build status" src="https://cloud.drone.io/api/badges/nytimes/three-story-controls/status.svg"></a>
   <br/><br/>
     <a href="#demos">Demos</a> &mdash;
     <a href="#usage">Usage</a> &mdash;
     <a href="#installation">Installation</a> &mdash;
-    <a href="https://nytimes.github.io/three-story-controls/docs/three-story-controls.html">API Docs</a> &mdash; 
-    <a href="#contributing">Contributing</a> 
+    <a href="https://kagawa0710.github.io/three-story-controls/docs/three-story-controls.html">API Docs</a> &mdash;
+    <a href="#contributing">Contributing</a> &mdash;
+    <a href="README.ja.md">日本語</a>
     <br><br>
     Components: <br>
     <a href="#camera-rig">Camera Rig</a> &mdash;
     <a href="#camera-helper">Camera Helper</a> &mdash;
     <a href="#control-schemes">Control Schemes</a> &mdash;
-    <a href="#input-adaptors">Input Adaptors</a> 
+    <a href="#input-adaptors">Input Adaptors</a>
     <br>
     <a href="#building-your-own-control-scheme">Building your own control scheme</a> <br><br>
+    <em>Fork maintained by <strong>gawatech</strong></em><br>
+    <em>Originally developed by <a href="https://rd.nytimes.com">The New York Times R&D</a></em>
 </div>
 
 
@@ -34,11 +36,11 @@
 <br>
 
 ## Demos
-* [FreeMovement controls](https://nytimes.github.io/three-story-controls/examples/demos/freemove): First-person controls to move freely around the scene.
-* [Scroll + 3DOF controls](https://nytimes.github.io/three-story-controls/examples/demos/scroll-controls): Scroll through the page to scrub through a camera animation. Slightly rotate the camera with mouse movements. 
-* [StoryPoint + 3DOF controls](https://nytimes.github.io/three-story-controls/examples/demos/story-points): Transition between specific points in the scene. Slightly rotate the camera with mouse movements. 
-* [PathPoint controls](https://nytimes.github.io/three-story-controls/examples/demos/path-points): Transition between specific frames of a camera animation.
-* [Camera Helper](https://nytimes.github.io/three-story-controls/examples/demos/camera-helper): Helper tool to create camera animations and/or points of interest that can be exported and used by the control schemes.
+* [FreeMovement controls](https://kagawa0710.github.io/three-story-controls/examples/demos/freemove): First-person controls to move freely around the scene.
+* [Scroll + 3DOF controls](https://kagawa0710.github.io/three-story-controls/examples/demos/scroll-controls): Scroll through the page to scrub through a camera animation. Slightly rotate the camera with mouse movements.
+* [StoryPoint + 3DOF controls](https://kagawa0710.github.io/three-story-controls/examples/demos/story-points): Transition between specific points in the scene. Slightly rotate the camera with mouse movements.
+* [PathPoint controls](https://kagawa0710.github.io/three-story-controls/examples/demos/path-points): Transition between specific frames of a camera animation.
+* [Camera Helper](https://kagawa0710.github.io/three-story-controls/examples/demos/camera-helper): Helper tool to create camera animations and/or points of interest that can be exported and used by the control schemes.
 
 <br> 
 
@@ -245,7 +247,7 @@ class MyCustomControls implements BaseControls {
 ---
 
 ## API and demos
-API documentation lives [here](docs/three-story-controls.md), and demos can be viewed [here](https://nytimes.github.io/three-story-controls/). Code for the demos lives in [`examples/demos`](examples/demos)
+API documentation lives [here](docs/three-story-controls.md), and demos can be viewed [here](https://kagawa0710.github.io/three-story-controls/). Code for the demos lives in [`examples/demos`](examples/demos)
 
 ---
 
@@ -256,6 +258,8 @@ If you add a new component, be sure to create an example and document it followi
 
 ---
 
-<br>
+## Credits
 
-> This repository is maintained by the Research & Development team at The New York Times and is provided as-is for your own use. For more information about R&D at the Times visit [rd.nytimes.com](https://rd.nytimes.com)
+This is a fork of [nytimes/three-story-controls](https://github.com/nytimes/three-story-controls), originally developed by the Research & Development team at The New York Times. For more information about the original project, visit [rd.nytimes.com](https://rd.nytimes.com).
+
+This fork is maintained by **gawatech** and provided as-is for your own use.

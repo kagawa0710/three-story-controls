@@ -1,0 +1,309 @@
+/* Three Story Controls - Modern Demo Styles */
+/* Glassmorphism + Modern Typography */
+
+:root {
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  --text-primary: #1a1a2e;
+  --text-secondary: #4a4a6a;
+  --accent: #667eea;
+  --accent-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  min-height: 100vh;
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+/* Full-screen 3D canvas container */
+body.demo-page {
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.canvas-parent {
+  width: 100vw;
+  height: 100vh;
+  touch-action: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+}
+
+/* Glassmorphism info panel */
+.info-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  max-width: 340px;
+  padding: 24px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  box-shadow: var(--glass-shadow);
+  color: #fff;
+  z-index: 100;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.info-panel h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-panel p {
+  color: rgba(255, 255, 255, 0.85);
+  margin-bottom: 8px;
+}
+
+.info-panel .controls {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--glass-border);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.info-panel kbd {
+  display: inline-block;
+  padding: 2px 8px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  font-size: 11px;
+  margin: 2px;
+}
+
+/* Source code button */
+.source-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 50%;
+  box-shadow: var(--glass-shadow);
+  z-index: 100;
+  transition: transform 0.2s ease, background 0.2s ease;
+  text-decoration: none;
+}
+
+.source-btn:hover {
+  transform: scale(1.1);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.source-btn svg {
+  width: 24px;
+  height: 24px;
+  fill: #fff;
+}
+
+/* Back to demos link */
+.back-link {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  padding: 10px 20px;
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  z-index: 100;
+  transition: background 0.2s ease;
+}
+
+.back-link:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+/* Mobile responsive */
+@media (max-width: 640px) {
+  .info-panel {
+    top: auto;
+    bottom: 80px;
+    left: 20px;
+    right: 20px;
+    max-width: none;
+  }
+
+  .back-link {
+    top: auto;
+    bottom: 20px;
+    left: 20px;
+    right: auto;
+  }
+}
+
+/* ===== INDEX PAGE STYLES ===== */
+.index-page {
+  min-height: 100vh;
+  padding: 60px 40px;
+}
+
+.index-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.index-header h1 {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 16px;
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.index-header p {
+  font-size: 1.125rem;
+  color: rgba(255, 255, 255, 0.7);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.index-header .badge {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 6px 16px;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.4);
+  border-radius: 20px;
+  color: #a5b4fc;
+  font-size: 14px;
+}
+
+/* Demo card grid */
+.demo-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.demo-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.demo-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+}
+
+.demo-card .thumbnail {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, #2d2d44 0%, #1a1a2e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  color: rgba(255, 255, 255, 0.3);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.demo-card .thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.demo-card .content {
+  padding: 24px;
+}
+
+.demo-card h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.demo-card p {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
+
+.demo-card .tag {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 4px 12px;
+  background: rgba(102, 126, 234, 0.2);
+  border-radius: 12px;
+  font-size: 12px;
+  color: #a5b4fc;
+}
+
+/* Footer */
+.index-footer {
+  text-align: center;
+  margin-top: 80px;
+  padding-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+}
+
+.index-footer a {
+  color: #a5b4fc;
+  text-decoration: none;
+}
+
+.index-footer a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .index-page {
+    padding: 40px 20px;
+  }
+
+  .demo-grid {
+    grid-template-columns: 1fr;
+  }
+}
