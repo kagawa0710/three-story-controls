@@ -1,6 +1,6 @@
 {
   "name": "@kagawa0710/three-story-controls",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "A three.js camera toolkit for creating interactive 3d stories (fork of @nytimes/three-story-controls with updated dependencies)",
   "main": "dist/three-story-controls.esm.min.js",
   "module": "dist/three-story-controls.esm.min.js",
