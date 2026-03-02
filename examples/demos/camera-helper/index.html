@@ -1,82 +1,95 @@
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Camera Helper</title>
-  <script async src="https://unpkg.com/es-module-shims@0.11.1/dist/es-module-shims.js"></script>
-  <script type="importmap-shim">
-  {
-    "imports": {
-      "three": "https://cdn.skypack.dev/three@0.137.0",
-      "gsap": "https://cdn.skypack.dev/gsap@3.6.1",
-      "three-story-controls" : "../../../dist/three-story-controls.esm.js"
-    }
-  }
-  </script>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-    }
-
+    * { margin: 0; padding: 0; }
     body {
       width: 100vw;
       height: 100vh;
       overflow: hidden;
+      background: #1a1a1e;
     }
-
     .canvas-parent {
       width: 100vw;
       height: 100vh;
       touch-action: none;
     }
-
-    p {
-      position: fixed;
-      top: 0;
-      right: 0;
-      width: 300px;
-      padding: 1rem 2rem;
-      font-family: 'Courier New', Courier, monospace;
-      line-height: 1.2;
-      background-color: white;
-      color: black;
-    }
-
-    #button {
-      position: fixed;
-      bottom: 16px;
-      right: 16px;
-      padding: 12px;
-      border-radius: 50%;
-      margin-bottom: 0px;
-      background-color: #FFF;
-      opacity: .9;
-      z-index: 999;
-      box-shadow: 0 0 4px rgb(0 0 0 / 15%);
-    }
   </style>
 </head>
-
 <body>
-  <div class='canvas-parent'>
-  </div>
-  <p>
-    Use the + button on the bottom-left to record the camera position. Move around and add a few points, and then hit play or use the slider to scrub between them.
-    <br> <br>
-    The JSON export contains individual points as well as data for an Animation clip. It can be used for Story Point controls, Scroll controls and Path Point controls.
-    <br> <br>
-    You can export a draft JSON to keep working on the points later. Once you're finished you can export a smaller production copy.
-    <br> <br>
-    Use arrow/WASD keys or mouse wheel/trackpad to move around, and click and drag to turn/rotate the camera. U/N keys raise/lowers the camera. 
-    <br> <br>
-    Note: This isn't intended to be used on mobile.
-  </p>
-  <a id="button" target="_blank" href="https://github.com/nytimes/three-story-controls/tree/main/examples/demos/camera-helper" title="View source code for demo">
-    <img src="../ic_code_black_24dp.svg"/>
-  </a>
-  <script type='module-shim' src='script.js'></script>
-</body>
+  <div class="canvas-parent"></div>
 
+  <script type="module">
+    import {
+      Scene,
+      PerspectiveCamera,
+      WebGLRenderer,
+      GridHelper,
+      ConeGeometry,
+      MeshPhongMaterial,
+      Mesh,
+      Vector3,
+      HemisphereLight,
+    } from 'three';
+    import { CameraRig, FreeMovementControls, CameraHelper } from '@kagawa0710/three-story-controls';
+
+    const canvasParent = document.querySelector('.canvas-parent');
+
+    const scene = new Scene();
+    const camera = new PerspectiveCamera(60, canvasParent.clientWidth / canvasParent.clientHeight, 0.1, 10000);
+    const renderer = new WebGLRenderer({ antialias: true });
+    renderer.setSize(canvasParent.clientWidth, canvasParent.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    canvasParent.appendChild(renderer.domElement);
+
+    const light = new HemisphereLight(0xffffbb, 0x080820, 1);
+    scene.add(light);
+
+    const grid = new GridHelper(100, 50);
+    grid.position.set(0, -5, 0);
+    scene.add(grid);
+
+    const rig = new CameraRig(camera, scene);
+    const controls = new FreeMovementControls(rig, {
+      domElement: canvasParent,
+    });
+    controls.enable();
+
+    const cameraHelper = new CameraHelper(rig, controls, renderer.domElement);
+
+    const cones = [
+      { position: new Vector3(0, 0, -30), color: 0xff0000 },
+      { position: new Vector3(20, 0, -45), color: 0xffff00 },
+      { position: new Vector3(45, 0, 0), color: 0xff00ff },
+      { position: new Vector3(30, 0, 20), color: 0x00ffff },
+      { position: new Vector3(-10, 0, 45), color: 0x00ff00 },
+      { position: new Vector3(-40, 0, 20), color: 0x0000ff },
+    ];
+
+    const coneGeo = new ConeGeometry(3, 10, 4);
+    cones.forEach((item) => {
+      const mesh = new Mesh(coneGeo, new MeshPhongMaterial({ color: item.color }));
+      mesh.position.copy(item.position);
+      scene.add(mesh);
+    });
+
+    function render(t) {
+      controls.update(t);
+      renderer.render(scene, camera);
+      cameraHelper.update(t);
+      window.requestAnimationFrame(render);
+    }
+
+    window.addEventListener('resize', () => {
+      camera.aspect = canvasParent.clientWidth / canvasParent.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(canvasParent.clientWidth, canvasParent.clientHeight);
+    });
+
+    render();
+  </script>
+</body>
 </html>

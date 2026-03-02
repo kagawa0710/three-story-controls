@@ -7,6 +7,7 @@ import {
   Scene,
   AnimationMixer,
   AnimationClip,
+  NumberKeyframeTrack,
   EventDispatcher,
   Euler,
   EulerOrder,
@@ -172,9 +173,10 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
   private inTransit = false
   private upAxis: Axis = Axis.Y
   private actionAxes: ActionAxes = ActionMappingByUpAxis[this.upAxis]
-  private hasAnimation = false
+  private _hasAnimation = false
   private animationClip: AnimationClip
   private mixer: AnimationMixer
+  private fovTrack: NumberKeyframeTrack | null = null
   private animationTranslationObjectName = 'Translation'
   private animationRotationObjectName = 'Rotation'
 
@@ -182,6 +184,10 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
     [CameraAction.Tilt]: false,
     [CameraAction.Pan]: true,
     [CameraAction.Roll]: false,
+  }
+
+  get hasAnimation(): boolean {
+    return this._hasAnimation
   }
 
   // Constructor
@@ -398,13 +404,47 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
     this.animationClip = clip
     if (translationObjectName) this.animationTranslationObjectName = translationObjectName
     if (rotationObjectName) this.animationRotationObjectName = rotationObjectName
-    this.hasAnimation = true
+    this._hasAnimation = true
+
+    const fovTrackIndex = this.animationClip.tracks.findIndex((t) => t.name === 'Fov.fov')
+    if (fovTrackIndex !== -1) {
+      this.fovTrack = this.animationClip.tracks[fovTrackIndex] as NumberKeyframeTrack
+      this.animationClip.tracks.splice(fovTrackIndex, 1)
+      this.animationClip.duration = this.animationClip.tracks.reduce(
+        (max, t) => Math.max(max, t.times[t.times.length - 1]),
+        0,
+      )
+    } else {
+      this.fovTrack = null
+    }
+
     // hack. threejs skips last frame when seek time = clip duration
     this.animationClip.duration += 0.01
     this.mixer = new AnimationMixer(this.body)
     const action = this.mixer.clipAction(this.animationClip)
     action.clampWhenFinished = true
     action.play()
+  }
+
+  private interpolateFovAtTime(time: number): void {
+    if (!this.fovTrack || !(this.camera instanceof PerspectiveCamera)) return
+    const times = this.fovTrack.times
+    const values = this.fovTrack.values
+
+    if (time <= times[0]) {
+      this.camera.fov = values[0]
+    } else if (time >= times[times.length - 1]) {
+      this.camera.fov = values[values.length - 1]
+    } else {
+      for (let i = 0; i < times.length - 1; i++) {
+        if (time >= times[i] && time <= times[i + 1]) {
+          const t = (time - times[i]) / (times[i + 1] - times[i])
+          this.camera.fov = values[i] + t * (values[i + 1] - values[i])
+          break
+        }
+      }
+    }
+    this.camera.updateProjectionMatrix()
   }
 
   /**
@@ -485,7 +525,7 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
    * @param ease - ease
    */
   flyToKeyframe(frame: number, duration = 1, ease = 'power1'): void {
-    if (this.hasAnimation && !this.isMoving()) {
+    if (this._hasAnimation && !this.isMoving()) {
       const currentValues = {
         time: this.mixer.time,
       }
@@ -498,6 +538,7 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
       }
       const onUpdate = (tween): void => {
         this.mixer.setTime(currentValues.time)
+        this.interpolateFovAtTime(currentValues.time)
         this.dispatchEvent({
           type: 'CameraMoveUpdate',
           progress: tween.progress(),
@@ -524,12 +565,13 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
    * @param percentage - percentage of animation clip to move to, between 0 and 1
    */
   setAnimationPercentage(percentage: number): void {
-    if (this.hasAnimation) {
-      const percent = Math.max(
+    if (this._hasAnimation) {
+      const time = Math.max(
         0,
         Math.min(percentage * this.animationClip.duration, this.animationClip.duration - 0.0001),
       )
-      this.mixer.setTime(percent)
+      this.mixer.setTime(time)
+      this.interpolateFovAtTime(time)
     }
   }
 
@@ -537,13 +579,20 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
    * @param time - timestamp of animation clip to move to
    */
   setAnimationTime(time: number): void {
-    if (this.hasAnimation) this.mixer.setTime(time)
+    if (this._hasAnimation) {
+      this.mixer.setTime(time)
+      this.interpolateFovAtTime(time)
+    }
   }
 
   /**
    * @param frame - frame of animation clip to move to
    */
   setAnimationKeyframe(frame: number): void {
-    if (this.hasAnimation) this.mixer.setTime(this.animationClip.tracks[0].times[frame])
+    if (this._hasAnimation) {
+      const time = this.animationClip.tracks[0].times[frame]
+      this.mixer.setTime(time)
+      this.interpolateFovAtTime(time)
+    }
   }
 }
