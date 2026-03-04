@@ -1,12 +1,7 @@
 import { Damper } from './Damper'
 import type { DamperValues, DamperProps } from './Damper'
 
-import {
-  CameraRig,
-  CameraAction,
-  RigComponent,
-  Axis,
-} from './CameraRig'
+import { CameraRig, CameraAction, RigComponent, Axis } from './CameraRig'
 import type {
   ActionAxes,
   TranslateGuide,
@@ -18,9 +13,7 @@ import type {
 import { BaseAdaptor } from './adaptors/BaseAdaptor'
 import type { DiscreteEvent, ContinuousEvent, IntertiaCompleteEvent } from './adaptors/BaseAdaptor'
 
-import {
-  KeyboardAdaptor,
-} from './adaptors/KeyboardAdaptor'
+import { KeyboardAdaptor } from './adaptors/KeyboardAdaptor'
 import type {
   KeyboardAdaptorProps,
   KeyboardAdaptorType,
@@ -35,9 +28,7 @@ import { ScrollAdaptor } from './adaptors/ScrollAdaptor'
 import type { ScrollAdaptorProps, ScrollAdaptorEvent } from './adaptors/ScrollAdaptor'
 import { SwipeAdaptor } from './adaptors/SwipeAdaptor'
 import type { SwipeAdaptorProps, SwipeAdaptorEvent } from './adaptors/SwipeAdaptor'
-import {
-  WheelAdaptor,
-} from './adaptors/WheelAdaptor'
+import { WheelAdaptor } from './adaptors/WheelAdaptor'
 import type {
   WheelAdaptorProps,
   WheelAdaptorType,
@@ -69,12 +60,7 @@ import { CameraHelper } from './camerahelper'
 
 import { createScrollStory } from './ScrollStoryBuilder'
 import type { ScrollStoryResult } from './ScrollStoryBuilder'
-import type {
-  StoryConfig,
-  StoryConfigScroll,
-  StoryConfigTransitions,
-  StoryConfigSection,
-} from './types/StoryConfig'
+import type { StoryConfig, StoryConfigScroll, StoryConfigTransitions, StoryConfigSection } from './types/StoryConfig'
 
 export {
   Damper,

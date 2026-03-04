@@ -566,10 +566,7 @@ export class CameraRig extends EventDispatcher<CameraRigEventMap> {
    */
   setAnimationPercentage(percentage: number): void {
     if (this._hasAnimation) {
-      const time = Math.max(
-        0,
-        Math.min(percentage * this.animationClip.duration, this.animationClip.duration - 0.0001),
-      )
+      const time = Math.max(0, Math.min(percentage * this.animationClip.duration, this.animationClip.duration - 0.0001))
       this.mixer.setTime(time)
       this.interpolateFovAtTime(time)
     }
