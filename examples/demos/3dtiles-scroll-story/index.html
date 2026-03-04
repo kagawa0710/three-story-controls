@@ -146,12 +146,74 @@
 
     const tiles = new TilesRenderer('/manazuru-dosojin/tileset.json');
     tiles.registerPlugin(new TilesFadePlugin({ fadeDuration: 500, fadeRootTiles: true }));
-    tiles.registerPlugin(new GLTFExtensionsPlugin({ dracoLoader }));
+    tiles.registerPlugin(new GLTFExtensionsPlugin({ dracoLoader, metadata: true }));
     tiles.setCamera(camera);
     tiles.setResolutionFromRenderer(camera, renderer);
 
     tiles.group.rotation.x = -Math.PI / 2;
     scene.add(tiles.group);
+
+    // 3D annotation markers
+    const annotationGroup = new THREE.Group();
+    scene.add(annotationGroup);
+
+    const annotations = [
+      { position: new THREE.Vector3(0, 0.3, 0), label: 'Head' },
+      { position: new THREE.Vector3(0.15, 0, 0), label: 'Right side' },
+      { position: new THREE.Vector3(-0.15, 0, 0), label: 'Left side' },
+    ];
+
+    const annotationSprites = [];
+    annotations.forEach(({ position, label }) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = 256;
+      canvas.height = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+      ctx.roundRect(0, 0, 256, 64, 8);
+      ctx.fill();
+      ctx.font = '24px sans-serif';
+      ctx.fillStyle = 'white';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, 128, 32);
+
+      const texture = new THREE.CanvasTexture(canvas);
+      const material = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 0 });
+      const sprite = new THREE.Sprite(material);
+      sprite.position.copy(position);
+      sprite.scale.set(0.3, 0.075, 1);
+      sprite.userData.label = label;
+      annotationGroup.add(sprite);
+      annotationSprites.push(sprite);
+    });
+
+    // Raycaster for interactive picking
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+    const tooltip = document.createElement('div');
+    tooltip.style.cssText = 'position:fixed;padding:6px 12px;background:rgba(0,0,0,0.85);color:white;font-size:13px;border-radius:4px;pointer-events:none;z-index:1000;display:none;';
+    document.body.appendChild(tooltip);
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+      pointer.set(
+        (e.clientX / window.innerWidth) * 2 - 1,
+        -(e.clientY / window.innerHeight) * 2 + 1
+      );
+      raycaster.setFromCamera(pointer, camera);
+      const hits = raycaster.intersectObjects(annotationSprites);
+      if (hits.length > 0) {
+        const hit = hits[0];
+        tooltip.textContent = hit.object.userData.label;
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${e.clientX + 12}px`;
+        tooltip.style.top = `${e.clientY - 30}px`;
+        renderer.domElement.style.cursor = 'pointer';
+      } else {
+        tooltip.style.display = 'none';
+        renderer.domElement.style.cursor = '';
+      }
+    });
 
     tiles.addEventListener('load-root-tileset', () => {
       document.getElementById('stats').innerText = 'Loaded!';
@@ -165,6 +227,20 @@
       scrollElement,
       cameraData,
     );
+
+    // Listen for section events
+    controls.addEventListener('sectionactive', (event) => {
+      const idx = event.index;
+      if (idx < annotationSprites.length) {
+        annotationSprites[idx].material.opacity = 1;
+      }
+    });
+    controls.addEventListener('sectioninactive', (event) => {
+      const idx = event.index;
+      if (idx < annotationSprites.length) {
+        annotationSprites[idx].material.opacity = 0;
+      }
+    });
 
     const controls3dof = new ThreeDOFControls(rig, {
       panFactor: Math.PI / 20,

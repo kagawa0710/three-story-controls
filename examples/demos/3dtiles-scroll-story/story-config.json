@@ -4,7 +4,8 @@
     "height": "600vh",
     "dampingFactor": 0.1,
     "startOffset": "-50vh",
-    "endOffset": "-50vh"
+    "endOffset": "-50vh",
+    "ease": "easeInOutCubic"
   },
   "camera": { "src": "./camera-data.json" },
   "transitions": {
@@ -16,19 +17,28 @@
       "id": "c1",
       "content": "<p>正面から見た道祖神。石に彫られた像が特徴的です。</p>",
       "position": "17%",
-      "placement": "left"
+      "placement": "left",
+      "fadeInRange": 7,
+      "backgroundColor": "rgba(0,0,0,0.85)",
+      "borderRadius": "8px"
     },
     {
       "id": "c2",
       "content": "<p>側面から見ると、石の形状がよくわかります。</p>",
       "position": "42%",
-      "placement": "right"
+      "placement": "right",
+      "fadeInRange": 7,
+      "backgroundColor": "rgba(0,0,0,0.85)",
+      "borderRadius": "8px"
     },
     {
       "id": "c3",
       "content": "<p>別の角度から。細部のディテールも確認できます。</p>",
       "position": "67%",
-      "placement": "left"
+      "placement": "left",
+      "fadeInRange": 7,
+      "backgroundColor": "rgba(0,0,0,0.85)",
+      "borderRadius": "8px"
     }
   ]
 }

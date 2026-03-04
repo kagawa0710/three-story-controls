@@ -1,11 +1,18 @@
 import { Camera, Scene, AnimationClip } from 'three'
 import { CameraRig } from './CameraRig'
 import { ScrollStoryControls } from './controlschemes/ScrollStoryControls'
+import { Easings } from './controlschemes/ScrollControls'
+import type { EasingFunction } from './controlschemes/ScrollControls'
 import type { StoryConfig } from './types/StoryConfig'
 
 export interface ScrollStoryResult {
   controls: ScrollStoryControls
   rig: CameraRig
+}
+
+function resolveEasing(name?: string): EasingFunction | undefined {
+  if (!name || name === 'linear') return undefined
+  return Easings[name as keyof typeof Easings]
 }
 
 export async function createScrollStory(
@@ -39,6 +46,7 @@ export async function createScrollStory(
     canvasFadeIn: config.transitions?.canvasFadeIn ?? { start: '0%', end: '15%' },
     canvasFadeOut: config.transitions?.canvasFadeOut ?? { start: '85%', end: '100%' },
     canvasElement,
+    ease: resolveEasing(config.scroll?.ease),
   })
 
   return { controls, rig }

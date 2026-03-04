@@ -48,8 +48,8 @@ import type {
 import type { BaseControls, ExitPOIsEvent, UpdatePOIsEvent } from './controlschemes/BaseControls'
 import { FreeMovementControls } from './controlschemes/FreeMovementControls'
 import type { FreeMovementControlsProps } from './controlschemes/FreeMovementControls'
-import { ScrollControls } from './controlschemes/ScrollControls'
-import type { ScrollControlsProps, ScrollAction } from './controlschemes/ScrollControls'
+import { ScrollControls, Easings } from './controlschemes/ScrollControls'
+import type { ScrollControlsProps, ScrollAction, EasingFunction, EasingSegment } from './controlschemes/ScrollControls'
 import { StoryPointsControls } from './controlschemes/StoryPointsControls'
 import type { StoryPointsControlsProps, StoryPointMarker } from './controlschemes/StoryPointsControls'
 import { PathPointsControls } from './controlschemes/PathPointsControls'
@@ -57,7 +57,13 @@ import type { PathPointsControlsProps, PathPointMarker } from './controlschemes/
 import { ThreeDOFControls } from './controlschemes/ThreeDOFControls'
 import type { ThreeDOFControlsProps } from './controlschemes/ThreeDOFControls'
 import { ScrollStoryControls } from './controlschemes/ScrollStoryControls'
-import type { ScrollStoryControlsProps, ScrollStorySection } from './controlschemes/ScrollStoryControls'
+import type {
+  ScrollStoryControlsProps,
+  ScrollStorySection,
+  SectionActiveEvent,
+  SectionInactiveEvent,
+  ScrollStoryEventMap,
+} from './controlschemes/ScrollStoryControls'
 
 import { CameraHelper } from './camerahelper'
 
@@ -90,6 +96,7 @@ export {
   ThreeDOFControls,
   CameraHelper,
   createScrollStory,
+  Easings,
 }
 
 export type {
@@ -124,6 +131,8 @@ export type {
   FreeMovementControlsProps,
   ScrollControlsProps,
   ScrollAction,
+  EasingFunction,
+  EasingSegment,
   StoryPointsControlsProps,
   StoryPointMarker,
   PathPointsControlsProps,
@@ -131,6 +140,9 @@ export type {
   ThreeDOFControlsProps,
   ScrollStoryControlsProps,
   ScrollStorySection,
+  SectionActiveEvent,
+  SectionInactiveEvent,
+  ScrollStoryEventMap,
   ScrollStoryResult,
   StoryConfig,
   StoryConfigScroll,

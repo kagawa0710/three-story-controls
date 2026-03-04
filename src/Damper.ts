@@ -6,25 +6,33 @@ export interface DamperValues {
 export interface DamperProps {
   /**  Values to be dampened */
   values: DamperValues
-  /** Multiplier used on each update to approach the target value, should be between 0 and 1, where 1 is no damping */
+  /** Damping speed. When `useDeltaTime` is true, this is a rate constant in 1/seconds (higher = faster convergence). When `useDeltaTime` is false, this is a per-frame multiplier between 0 and 1. */
   dampingFactor: number
   /** Amount of permitted error before a value is considered to have 'reached' its target. Defaults to 0.001 */
   epsilon?: number
+  /** Enable frame-rate independent damping using delta time. Defaults to false for backwards compatibility. */
+  useDeltaTime?: boolean
 }
 
 /**
- * Damper uses simple linear damping for a given collection of values.
+ * Damper uses damping for a given collection of values.
  * On every call to update, the damper will approach a given set of target values.
+ *
+ * When `useDeltaTime` is enabled, the damper uses exponential decay with delta-time
+ * compensation for frame-rate independent behaviour:
+ * `value += delta * (1 - exp(-speed * dt))`
+ *
  * @example
  * ```js
  * const damper = new Damper({
  *  values: {x: 0, y: 0},
- *  dampingFactor: 0.4
+ *  dampingFactor: 8,
+ *  useDeltaTime: true,
  * })
  *
  * damper.setTarget({ x: 1, y: 100 })
  * damper.update() // would generally be called in an animation loop
- * const values = damper.getCurrentValues() // values.x = 0.4; values.y = 40
+ * const values = damper.getCurrentValues()
  * ```
  */
 
@@ -35,6 +43,8 @@ export class Damper {
   private targetValues: DamperValues = {}
   private deltaValues: DamperValues = {}
   private hasReached: boolean
+  private useDeltaTime: boolean
+  private lastTime: number | null = null
 
   constructor(props: DamperProps) {
     Object.assign(this.values, props.values)
@@ -45,13 +55,31 @@ export class Damper {
     }
     this.dampingFactor = props.dampingFactor
     if (props.epsilon) this.epsilon = props.epsilon
+    this.useDeltaTime = props.useDeltaTime ?? false
     this.hasReached = true
   }
 
   /**
-   * Update the damper, should generally be called on every frame
+   * Update the damper, should generally be called on every frame.
+   * When `useDeltaTime` is enabled, pass the current timestamp (from requestAnimationFrame or performance.now()).
+   * @param time - Current timestamp in milliseconds (required when useDeltaTime is true)
    */
-  update(): void {
+  update(time?: number): void {
+    let factor: number
+
+    if (this.useDeltaTime) {
+      const now = time ?? performance.now()
+      if (this.lastTime === null) {
+        this.lastTime = now
+        return
+      }
+      const dt = (now - this.lastTime) / 1000
+      this.lastTime = now
+      factor = 1 - Math.exp(-this.dampingFactor * dt)
+    } else {
+      factor = this.dampingFactor
+    }
+
     const deltas = {}
     let approached = true
 
@@ -68,7 +96,7 @@ export class Damper {
       this.hasReached = true
     } else {
       for (const key in this.values) {
-        this.deltaValues[key] = this.dampingFactor * deltas[key]
+        this.deltaValues[key] = factor * deltas[key]
         this.values[key] += this.deltaValues[key]
       }
     }
@@ -106,6 +134,7 @@ export class Damper {
       this.deltaValues[key] = 0
     }
     this.hasReached = true
+    this.lastTime = null
   }
 
   /**
@@ -119,6 +148,7 @@ export class Damper {
       this.deltaValues[key] = 0
     }
     this.hasReached = true
+    this.lastTime = null
   }
 
   /**

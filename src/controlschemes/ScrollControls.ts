@@ -2,6 +2,30 @@ import { BaseControls } from './BaseControls'
 import { CameraRig } from '../CameraRig'
 import { ScrollAdaptor } from '../adaptors/ScrollAdaptor'
 
+/** Easing function that maps a 0-1 input to a 0-1 output */
+export type EasingFunction = (t: number) => number
+
+/** Built-in easing functions */
+export const Easings = {
+  linear: (t: number) => t,
+  easeInQuad: (t: number) => t * t,
+  easeOutQuad: (t: number) => t * (2 - t),
+  easeInOutQuad: (t: number) => (t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t),
+  easeInCubic: (t: number) => t * t * t,
+  easeOutCubic: (t: number) => --t * t * t + 1,
+  easeInOutCubic: (t: number) => (t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1),
+} as const satisfies Record<string, EasingFunction>
+
+/** A segment of a piecewise easing curve */
+export interface EasingSegment {
+  /** Scroll percentage where this segment starts (0-1) */
+  start: number
+  /** Scroll percentage where this segment ends (0-1) */
+  end: number
+  /** Easing function for this segment */
+  ease: EasingFunction
+}
+
 /**
  * ScrollActions provide a way to add custom callback hooks for specific parts of the scroll area
  */
@@ -42,6 +66,10 @@ export interface ScrollControlsProps {
   cameraEnd?: string
   /** Array of ScrollActions for custom scroll hooks  */
   scrollActions: ScrollAction[]
+  /** Optional easing function applied to the camera animation progress. Defaults to linear. */
+  ease?: EasingFunction
+  /** Optional piecewise easing segments for fine-grained control over different scroll regions */
+  easeSegments?: EasingSegment[]
 }
 
 const defaultProps: Partial<ScrollControlsProps> = {
@@ -54,8 +82,18 @@ const defaultProps: Partial<ScrollControlsProps> = {
   scrollActions: [],
 }
 
-const mapRange = (number, inMin, inMax, outMin, outMax): number => {
+const mapRange = (number: number, inMin: number, inMax: number, outMin: number, outMax: number): number => {
   return Math.max(outMin, Math.min(outMax, (number - inMin) * ((outMax - outMin) / (inMax - inMin)) + outMin))
+}
+
+const applyPiecewiseEasing = (t: number, segments: EasingSegment[]): number => {
+  for (const seg of segments) {
+    if (t >= seg.start && t <= seg.end) {
+      const localT = (t - seg.start) / (seg.end - seg.start)
+      return seg.start + seg.ease(localT) * (seg.end - seg.start)
+    }
+  }
+  return t
 }
 
 /**
@@ -109,12 +147,14 @@ export class ScrollControls implements BaseControls {
   private enabled = false
   private cameraStart: string
   private cameraEnd: string
-  private cameraStartPx: number
-  private cameraEndPx: number
-  private cameraBufferedStartPx: number
-  private cameraBufferedEndPx: number
+  private cameraStartPx = 0
+  private cameraEndPx = 0
+  private cameraBufferedStartPx = 0
+  private cameraBufferedEndPx = 0
   private scrollActions: ScrollAction[]
   private buffer: number
+  private ease: EasingFunction | null
+  private easeSegments: EasingSegment[] | null
 
   constructor(cameraRig: CameraRig, props: ScrollControlsProps) {
     this.cameraRig = cameraRig
@@ -128,10 +168,12 @@ export class ScrollControls implements BaseControls {
       buffer: props.buffer || defaultProps.buffer,
     })
 
-    this.cameraStart = props.cameraStart || defaultProps.cameraStart
-    this.cameraEnd = props.cameraEnd || defaultProps.cameraEnd
-    this.scrollActions = props.scrollActions || defaultProps.scrollActions
-    this.buffer = props.buffer || defaultProps.buffer
+    this.cameraStart = props.cameraStart ?? defaultProps.cameraStart!
+    this.cameraEnd = props.cameraEnd ?? defaultProps.cameraEnd!
+    this.scrollActions = props.scrollActions ?? defaultProps.scrollActions!
+    this.buffer = props.buffer ?? defaultProps.buffer!
+    this.ease = props.ease ?? null
+    this.easeSegments = props.easeSegments ?? null
     this.calculateStops()
     this.onScroll = this.onScroll.bind(this)
   }
@@ -171,10 +213,17 @@ export class ScrollControls implements BaseControls {
     })
   }
 
-  private onScroll(event): void {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  private onScroll(event: any): void {
     const progress = event.dampenedValues.scrollPx
     if (progress >= this.cameraBufferedStartPx && progress <= this.cameraBufferedEndPx) {
-      this.cameraRig.setAnimationPercentage(mapRange(progress, this.cameraStartPx, this.cameraEndPx, 0, 1))
+      let animProgress = mapRange(progress, this.cameraStartPx, this.cameraEndPx, 0, 1)
+      if (this.easeSegments) {
+        animProgress = applyPiecewiseEasing(animProgress, this.easeSegments)
+      } else if (this.ease) {
+        animProgress = this.ease(animProgress)
+      }
+      this.cameraRig.setAnimationPercentage(animProgress)
     }
     this.scrollActions.forEach((action) => {
       if (progress >= action.bufferedStartPx && progress <= action.bufferedEndPx) {

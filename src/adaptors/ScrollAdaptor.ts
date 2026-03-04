@@ -63,6 +63,7 @@ export class ScrollAdaptor extends BaseAdaptor {
   private endOffset: string
   private buffer: number
   private resizeObserver: ResizeObserver
+  private dimensionsNeedUpdate = false
 
   constructor(props: ScrollAdaptorProps) {
     super()
@@ -79,23 +80,30 @@ export class ScrollAdaptor extends BaseAdaptor {
     })
     this.calculateDimensions = this.calculateDimensions.bind(this)
     this.onScroll = this.onScroll.bind(this)
-    this.resizeObserver = new ResizeObserver(this.calculateDimensions)
+    this.resizeObserver = new ResizeObserver(() => {
+      this.dimensionsNeedUpdate = true
+    })
     this.calculateDimensions()
   }
 
   connect(): void {
     window.addEventListener('scroll', this.onScroll, { passive: true })
-    this.resizeObserver.observe(document.body)
+    this.resizeObserver.observe(this.scrollElement)
     this.connected = true
   }
 
   disconnect(): void {
     window.removeEventListener('scroll', this.onScroll)
-    this.resizeObserver.unobserve(document.body)
+    this.resizeObserver.unobserve(this.scrollElement)
     this.connected = false
   }
 
   update(): void {
+    if (this.dimensionsNeedUpdate) {
+      this.calculateDimensions()
+      this.dimensionsNeedUpdate = false
+    }
+
     if (
       this.lastSeenScrollValue !== this.previousScrollValue &&
       this.lastSeenScrollValue >= this.bufferedStartPosition &&

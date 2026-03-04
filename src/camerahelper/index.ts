@@ -10,9 +10,49 @@ import {
 import gsap from 'gsap'
 import { CameraRig } from '../CameraRig'
 import { FreeMovementControls } from '../controlschemes/FreeMovementControls'
+import { Easings } from '../controlschemes/ScrollControls'
+import type { EasingFunction } from '../controlschemes/ScrollControls'
 import './index.css'
 
 const easeFunctions = ['none', 'power1', 'power2', 'power3', 'power4', 'sine', 'expo', 'circ']
+
+const scrollEaseFunctions: Record<string, EasingFunction> = {
+  linear: Easings.linear,
+  easeInQuad: Easings.easeInQuad,
+  easeOutQuad: Easings.easeOutQuad,
+  easeInOutQuad: Easings.easeInOutQuad,
+  easeInCubic: Easings.easeInCubic,
+  easeOutCubic: Easings.easeOutCubic,
+  easeInOutCubic: Easings.easeInOutCubic,
+}
+
+function drawEasingCurve(canvas: HTMLCanvasElement, easeFn: EasingFunction): void {
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return
+  const w = canvas.width
+  const h = canvas.height
+  const padding = 8
+
+  ctx.clearRect(0, 0, w, h)
+
+  ctx.strokeStyle = '#333'
+  ctx.lineWidth = 1
+  ctx.strokeRect(padding, padding, w - padding * 2, h - padding * 2)
+
+  ctx.beginPath()
+  ctx.strokeStyle = '#6cf'
+  ctx.lineWidth = 2
+  const steps = 100
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps
+    const v = easeFn(t)
+    const x = padding + t * (w - padding * 2)
+    const y = h - padding - v * (h - padding * 2)
+    if (i === 0) ctx.moveTo(x, y)
+    else ctx.lineTo(x, y)
+  }
+  ctx.stroke()
+}
 
 interface POI {
   position: Vector3
@@ -80,6 +120,9 @@ export class CameraHelper {
   private sliderLabel: HTMLElement
   private poiCountEl: HTMLElement
   private btnScrollAutoPlay: HTMLElement
+  private scrollEase: EasingFunction = Easings.linear
+  private scrollEaseName = 'linear'
+  private easeCurveCanvas: HTMLCanvasElement
 
   constructor(rig: CameraRig, controls: FreeMovementControls, canvas: HTMLCanvasElement, canvasParent?: HTMLElement) {
     this.rig = rig
@@ -134,7 +177,8 @@ export class CameraHelper {
       }
       const elapsed = time - this.scrollAutoPlayStart
       const progress = Math.min(elapsed / this.scrollAutoPlayDuration, 1)
-      this.rig.setAnimationPercentage(progress)
+      const easedProgress = this.scrollEase(progress)
+      this.rig.setAnimationPercentage(easedProgress)
       if (this.scrollSlider) this.scrollSlider.value = String(progress * 1000)
       if (this.sliderLabel) this.sliderLabel.textContent = `${Math.round(progress * 100)}%`
       if (progress >= 1) {
@@ -283,9 +327,43 @@ export class CameraHelper {
 
   private scrubClip(amount: number): void {
     if (this.pois.length > 0) {
-      this.rig.setAnimationPercentage(amount)
+      const easedAmount = this.scrollEase(amount)
+      this.rig.setAnimationPercentage(easedAmount)
       if (this.sliderLabel) this.sliderLabel.textContent = `${Math.round(amount * 100)}%`
     }
+  }
+
+  private exportStoryConfig(): void {
+    if (this.pois.length === 0) return
+
+    const config = {
+      version: 1,
+      scroll: {
+        height: '600vh',
+        dampingFactor: 0.1,
+        startOffset: '-50vh',
+        endOffset: '-50vh',
+        ease: this.scrollEaseName !== 'linear' ? this.scrollEaseName : undefined,
+      },
+      transitions: {
+        canvasFadeIn: { start: '0%', end: '15%' },
+        canvasFadeOut: { start: '85%', end: '100%' },
+      },
+      sections: this.pois.map((poi, i) => ({
+        id: `section-${i + 1}`,
+        content: `<p>Section ${i + 1}</p>`,
+        position: `${Math.round((i / (this.pois.length - 1 || 1)) * 80 + 10)}%`,
+        placement: i % 2 === 0 ? 'left' : 'right',
+      })),
+    }
+
+    const data = 'text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(config, null, 2))
+    const a = document.createElement('a')
+    a.href = 'data:' + data
+    a.download = 'story-config.json'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
   }
 
   private playClip(): void {
@@ -499,7 +577,80 @@ export class CameraHelper {
 
     sliderRow.append(this.scrollSlider, this.sliderLabel)
 
-    controlWrapper.append(ioGroup, playGroup, sliderRow)
+    // Row 4: Scroll easing
+    const easeGroup = document.createElement('div')
+    easeGroup.classList.add('control-group')
+
+    const easeLabel = document.createElement('label')
+    easeLabel.textContent = 'Scroll ease'
+    easeLabel.style.fontSize = '0.7rem'
+    easeLabel.style.color = '#999'
+    easeLabel.style.flexShrink = '0'
+
+    const scrollEaseSelect = document.createElement('select')
+    scrollEaseSelect.classList.add('btn-action')
+    scrollEaseSelect.style.flex = '1'
+    Object.keys(scrollEaseFunctions).forEach((name) => {
+      const op = document.createElement('option')
+      op.value = name
+      op.textContent = name
+      op.selected = name === this.scrollEaseName
+      scrollEaseSelect.appendChild(op)
+    })
+    scrollEaseSelect.onchange = () => {
+      this.scrollEaseName = scrollEaseSelect.value
+      this.scrollEase = scrollEaseFunctions[this.scrollEaseName] ?? Easings.linear
+      drawEasingCurve(this.easeCurveCanvas, this.scrollEase)
+    }
+
+    easeGroup.append(easeLabel, scrollEaseSelect)
+
+    // Row 5: Easing curve preview
+    this.easeCurveCanvas = document.createElement('canvas')
+    this.easeCurveCanvas.width = 300
+    this.easeCurveCanvas.height = 80
+    this.easeCurveCanvas.style.width = '100%'
+    this.easeCurveCanvas.style.height = '50px'
+    this.easeCurveCanvas.style.borderRadius = '4px'
+    this.easeCurveCanvas.style.background = '#1a1a1e'
+    drawEasingCurve(this.easeCurveCanvas, this.scrollEase)
+
+    // Row 6: Auto-scroll speed
+    const speedGroup = document.createElement('div')
+    speedGroup.classList.add('slider-row')
+    const speedLabel = document.createElement('label')
+    speedLabel.textContent = 'Speed'
+    speedLabel.style.fontSize = '0.7rem'
+    speedLabel.style.color = '#999'
+    speedLabel.style.flexShrink = '0'
+    const speedSlider = document.createElement('input')
+    speedSlider.type = 'range'
+    speedSlider.min = '1000'
+    speedSlider.max = '20000'
+    speedSlider.step = '500'
+    speedSlider.value = String(this.scrollAutoPlayDuration)
+    const speedValueLabel = document.createElement('span')
+    speedValueLabel.classList.add('slider-label')
+    speedValueLabel.textContent = `${this.scrollAutoPlayDuration / 1000}s`
+    speedSlider.oninput = () => {
+      this.scrollAutoPlayDuration = parseInt(speedSlider.value)
+      speedValueLabel.textContent = `${this.scrollAutoPlayDuration / 1000}s`
+    }
+    speedGroup.append(speedLabel, speedSlider, speedValueLabel)
+
+    // Row 7: Export story config
+    const storyConfigGroup = document.createElement('div')
+    storyConfigGroup.classList.add('control-group')
+
+    const btnExportStoryConfig = document.createElement('button')
+    btnExportStoryConfig.classList.add('btn-action')
+    btnExportStoryConfig.textContent = 'Story Config'
+    btnExportStoryConfig.title = 'Export full story config JSON'
+    btnExportStoryConfig.onclick = this.exportStoryConfig.bind(this)
+
+    storyConfigGroup.append(btnExportStoryConfig)
+
+    controlWrapper.append(ioGroup, playGroup, sliderRow, easeGroup, this.easeCurveCanvas, speedGroup, storyConfigGroup)
 
     this.drawer.append(header, btnAdd, this.collapseBtn, this.domList, controlWrapper)
 
