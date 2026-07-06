@@ -1,5 +1,6 @@
 import { AnimationClip } from 'three';
 import { Camera } from 'three';
+import { EulerOrder } from 'three';
 import { EventDispatcher } from 'three';
 import { Quaternion } from 'three';
 import { Scene } from 'three';
@@ -23,13 +24,19 @@ export declare enum Axis {
     Z = "z"
 }
 
-export declare abstract class BaseAdaptor extends EventDispatcher {
+export declare abstract class BaseAdaptor extends EventDispatcher<BaseAdaptorEventMap> {
     constructor();
     abstract connect(): void;
     abstract disconnect(): void;
     abstract update(time?: number): void;
     abstract isEnabled(): boolean;
 }
+
+declare type BaseAdaptorEventMap = {
+    trigger: DiscreteEvent;
+    update: ContinuousEvent;
+    inertiacomplete: IntertiaCompleteEvent;
+};
 
 export declare interface BaseControls {
     enable(): void;
@@ -257,7 +264,7 @@ export declare interface CameraMoveUpdateEvent {
  *
  * See {@link three-story-controls#CameraMoveStartEvent}, {@link three-story-controls#CameraMoveUpdateEvent} and {@link three-story-controls#CameraMoveEndEvent} for emitted event signatures.
  */
-export declare class CameraRig extends EventDispatcher {
+export declare class CameraRig extends EventDispatcher<CameraRigEventMap> {
     readonly camera: Camera;
     readonly scene: Scene;
     private body;
@@ -329,7 +336,7 @@ export declare class CameraRig extends EventDispatcher {
     /**
      * Get the rotation order as a string compatible with what three.js uses
      */
-    getRotationOrder(): string;
+    getRotationOrder(): EulerOrder;
     /**
      * Whether the camera is currently attached to the rig
      */
@@ -381,6 +388,12 @@ export declare class CameraRig extends EventDispatcher {
      */
     setAnimationKeyframe(frame: number): void;
 }
+
+declare type CameraRigEventMap = {
+    CameraMoveStart: CameraMoveStartEvent;
+    CameraMoveUpdate: CameraMoveUpdateEvent;
+    CameraMoveEnd: CameraMoveEndEvent;
+};
 
 export declare interface ContinuousEvent {
     type: 'update';
@@ -710,7 +723,7 @@ export declare interface PathPointMarker {
  * })
  * ```
  */
-export declare class PathPointsControls extends EventDispatcher implements BaseControls {
+export declare class PathPointsControls extends EventDispatcher<POIsControlsEventMap> implements BaseControls {
     readonly cameraRig: CameraRig;
     private wheelAdaptor;
     private swipeAdaptor;
@@ -847,6 +860,11 @@ export declare interface PointerAdaptorProps {
     /** Debounce for registering a change in the pointer count, in ms. Defaults to 100. */
     multipointerThreshold?: number;
 }
+
+declare type POIsControlsEventMap = {
+    ExitPOIs: ExitPOIsEvent;
+    update: UpdatePOIsEvent;
+};
 
 /**
  * Enum of {@link three-story-controls#CameraRig} parts
@@ -1073,7 +1091,7 @@ export declare interface StoryPointMarker {
  * document.querySelector('.prevBtn').on('click', () => controls.prevPOI() )
  * ```
  */
-export declare class StoryPointsControls extends EventDispatcher implements BaseControls {
+export declare class StoryPointsControls extends EventDispatcher<POIsControlsEventMap> implements BaseControls {
     readonly cameraRig: CameraRig;
     private keyboardAdaptor;
     private pois;

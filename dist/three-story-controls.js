@@ -2,11 +2,7 @@
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('three'), require('gsap')) :
     typeof define === 'function' && define.amd ? define(['exports', 'three', 'gsap'], factory) :
     (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.ThreeStoryControls = {}, global.THREE, global.gsap));
-}(this, (function (exports, three, gsap) { 'use strict';
-
-    function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
-
-    var gsap__default = /*#__PURE__*/_interopDefaultLegacy(gsap);
+})(this, (function (exports, three, gsap) { 'use strict';
 
     /**
      * Damper uses simple linear damping for a given collection of values.
@@ -492,7 +488,7 @@
                     this.unpackTransform();
                     this.dispatchEvent({ type: 'CameraMoveEnd' });
                 };
-                gsap__default['default'].to(currentValues, Object.assign(Object.assign({ duration,
+                gsap.to(currentValues, Object.assign(Object.assign({ duration,
                     ease }, targetValues), { onStart, onUpdate: function () {
                         onUpdate(this);
                     }, onComplete }));
@@ -528,7 +524,7 @@
                     this.inTransit = false;
                     this.dispatchEvent({ type: 'CameraMoveEnd' });
                 };
-                gsap__default['default'].to(currentValues, Object.assign(Object.assign({ duration,
+                gsap.to(currentValues, Object.assign(Object.assign({ duration,
                     ease }, targetValues), { onStart, onUpdate: function () {
                         onUpdate(this);
                     }, onComplete }));
@@ -1713,7 +1709,7 @@
       if ( ref === void 0 ) ref = {};
       var insertAt = ref.insertAt;
 
-      if (!css || typeof document === 'undefined') { return; }
+      if (typeof document === 'undefined') { return; }
 
       var head = document.head || document.getElementsByTagName('head')[0];
       var style = document.createElement('style');
@@ -1959,7 +1955,7 @@
                         duration: p2.duration,
                         ease: p2.ease,
                     };
-                    const tween = gsap__default['default'].to(values, target);
+                    const tween = gsap.to(values, target);
                     for (let j = 0; j < framesPerPoi; j++) {
                         const lerpAmount = p2.duration * (j / framesPerPoi);
                         times.push(tweenStartTime + lerpAmount);
@@ -2224,7 +2220,5 @@
     exports.ThreeDOFControls = ThreeDOFControls;
     exports.WheelAdaptor = WheelAdaptor;
 
-    Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+}));
 //# sourceMappingURL=three-story-controls.js.map

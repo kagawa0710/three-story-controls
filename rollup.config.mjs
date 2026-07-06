@@ -1,5 +1,5 @@
 import typescript from '@rollup/plugin-typescript'
-import { terser } from 'rollup-plugin-terser'
+import terser from '@rollup/plugin-terser'
 import postcss from 'rollup-plugin-postcss'
 import nested from 'postcss-nested'
 
@@ -50,10 +50,4 @@ const esmConfig = {
   plugins: [...commonPlugins()],
 }
 
-const config = [umdConfig, esmConfig]
-
-// if (NODE_ENV === 'production') {
-//   config.push(umdConfig)
-// }
-
-export default config
+export default [umdConfig, esmConfig]

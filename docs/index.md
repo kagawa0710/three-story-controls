@@ -6,7 +6,25 @@
 
 ## Packages
 
-|  Package | Description |
-|  --- | --- |
-|  [three-story-controls](./three-story-controls.md) |  |
+<table><thead><tr><th>
+
+Package
+
+
+</th><th>
+
+Description
+
+
+</th></tr></thead>
+<tbody><tr><td>
+
+[@kagawa0710/three-story-controls](./three-story-controls.md)
+
+
+</td><td>
+
+
+</td></tr>
+</tbody></table>
 

@@ -3,13 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Free Movement Controls | Three Story Controls</title>
+  <title>3D Tiles Demo | Three Story Controls</title>
   <link rel="stylesheet" href="../shared-styles.css">
   <script type="importmap">
   {
     "imports": {
       "three": "https://unpkg.com/three@0.185.1/build/three.module.js",
       "gsap": "https://unpkg.com/gsap@3.15.0/index.js",
+      "3d-tiles-renderer": "https://esm.sh/3d-tiles-renderer@0.4.28/three?external=three",
       "three-story-controls": "../../../dist/three-story-controls.esm.js"
     }
   }
@@ -21,17 +22,17 @@
   <a href="../index.html" class="back-link">Back to Demos</a>
 
   <div class="info-panel">
-    <h2>FreeMovement Controls</h2>
-    <p>First-person controls to move freely around the 3D scene.</p>
+    <h2>3D Tiles + FreeMovement Controls</h2>
+    <p>NASA-AMMOS 3DTilesRendererJS streams a remote 3D Tiles set while Three Story Controls handles navigation.</p>
     <div class="controls">
       <p><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> or <kbd>Arrows</kbd> - Move</p>
       <p><kbd>U</kbd> / <kbd>N</kbd> - Raise / Lower camera</p>
       <p><kbd>Mouse drag</kbd> - Rotate camera</p>
-      <p><kbd>Scroll</kbd> - Move forward/backward</p>
+      <p><kbd>Scroll</kbd> - Dolly camera</p>
     </div>
   </div>
 
-  <a class="source-btn" target="_blank" href="https://github.com/kagawa0710/three-story-controls/tree/dev/examples/demos/freemove" title="View source code">
+  <a class="source-btn" target="_blank" href="https://github.com/kagawa0710/three-story-controls/tree/dev/examples/demos/3d-tiles" title="View source code">
     <svg viewBox="0 0 24 24"><path d="M9.4 16.6L4.8 12l4.6-4.6L8 6l-6 6 6 6 1.4-1.4zm5.2 0l4.6-4.6-4.6-4.6L16 6l6 6-6 6-1.4-1.4z"/></svg>
   </a>
 
