@@ -7,6 +7,7 @@
     • Flexible camera rig API <br>
     • Visual tool for designing camera animations <br>
     • Collection of camera control schemes <br>
+    • 3D Tiles demo integration with NASA-AMMOS 3DTilesRendererJS <br>
     • Helper components to wire smoothed inputs to camera actions for custom control schemes.
     <br><br>
   </p>
@@ -15,7 +16,7 @@
     <a href="#demos">Demos</a> &mdash;
     <a href="#usage">Usage</a> &mdash;
     <a href="#installation">Installation</a> &mdash;
-    <a href="https://kagawa0710.github.io/three-story-controls/docs/three-story-controls.html">API Docs</a> &mdash;
+    <a href="https://kagawa0710.github.io/three-story-controls/docs/">API Docs</a> &mdash;
     <a href="#contributing">Contributing</a> &mdash;
     <a href="README.ja.md">日本語</a>
     <br><br>
@@ -26,7 +27,7 @@
     <a href="#input-adaptors">Input Adaptors</a>
     <br>
     <a href="#building-your-own-control-scheme">Building your own control scheme</a> <br><br>
-    <em>Fork maintained by <strong>gawatech</strong></em><br>
+    <em>Fork maintained by <strong>kagawa0710</strong></em><br>
     <em>Originally developed by <a href="https://rd.nytimes.com">The New York Times R&D</a></em>
 </div>
 
@@ -37,6 +38,7 @@
 
 ## Demos
 * [FreeMovement controls](https://kagawa0710.github.io/three-story-controls/examples/demos/freemove): First-person controls to move freely around the scene.
+* [3D Tiles Streaming](https://kagawa0710.github.io/three-story-controls/examples/demos/3d-tiles): Stream a remote 3D Tiles tileset with NASA-AMMOS 3DTilesRendererJS and navigate it with FreeMovement controls.
 * [Scroll + 3DOF controls](https://kagawa0710.github.io/three-story-controls/examples/demos/scroll-controls): Scroll through the page to scrub through a camera animation. Slightly rotate the camera with mouse movements.
 * [StoryPoint + 3DOF controls](https://kagawa0710.github.io/three-story-controls/examples/demos/story-points): Transition between specific points in the scene. Slightly rotate the camera with mouse movements.
 * [PathPoint controls](https://kagawa0710.github.io/three-story-controls/examples/demos/path-points): Transition between specific frames of a camera animation.
@@ -53,7 +55,7 @@ Here is an example of the `FreeMovementControls` scheme, where camera translatio
 
 ```javascript
 import { Scene, PerspectiveCamera, WebGLRenderer, GridHelper } from 'three'
-import { CameraRig, FreeMovementControls } from 'three-story-controls'
+import { CameraRig, FreeMovementControls } from '@kagawa0710/three-story-controls'
 
 const scene = new Scene()
 const camera = new PerspectiveCamera()
@@ -82,24 +84,29 @@ render()
 
 ## Installation
 
-The library depends on [three.js](https://threejs.org/) r129 or later and [gsap](https://greensock.com/gsap/) 3.6.1, which need to be installed separately. 
+The library depends on [three.js](https://threejs.org/) `0.160` or later and
+[gsap](https://greensock.com/gsap/) `3.6` or later, which need to be installed
+separately.
 
 ### 1. ES Module
-Download [`dist/three-story-controls.esm.min.js`](dist/three-story-controls.esm.min.js) (or use the [CDN link](https://unpkg.com/three-story-controls@latest/dist/three-story-controls.esm.min.js)) and use an `importmap-shim` to import the dependencies. See [here](examples/installation/es-module) for a full example. The [demos](examples/demos) also use this method of installation:
+Download [`dist/three-story-controls.esm.min.js`](dist/three-story-controls.esm.min.js)
+or use the CDN build from
+[`@kagawa0710/three-story-controls`](https://unpkg.com/@kagawa0710/three-story-controls@latest/dist/three-story-controls.esm.min.js).
+See [here](examples/installation/es-module) for a full example. The
+[demos](examples/demos) also use this method of installation:
   
   #### **`index.html`**
   ```html
-  <script async src="https://unpkg.com/es-module-shims@0.11.1/dist/es-module-shims.js"></script>
-  <script type="importmap-shim">
+  <script type="importmap">
   {
     "imports": {
-      "three": "https://cdn.skypack.dev/three@0.137.0",
-      "gsap": "https://cdn.skypack.dev/gsap@3.6.1",
+      "three": "https://unpkg.com/three@0.185.1/build/three.module.js",
+      "gsap": "https://unpkg.com/gsap@3.15.0/index.js",
       "three-story-controls" : "./three-story-controls.esm.min.js"
     }
   }
   </script>
-  <script src='index.js' type='module-shim'></script>
+  <script src="index.js" type="module"></script>
   ```
 
   #### **`index.js`**
@@ -109,17 +116,24 @@ Download [`dist/three-story-controls.esm.min.js`](dist/three-story-controls.esm.
   ```
 
 ### 2. NPM
-If you use a build system such as Webpack / Parcel / Rollup etc, you can also install the library along with three.js and gsap from [npm](https://www.npmjs.com/package/three-story-controls):
+If you use a build system such as Webpack / Parcel / Rollup etc, you can also
+install the library along with three.js and gsap from
+[npm](https://www.npmjs.com/package/@kagawa0710/three-story-controls):
 ```
-npm install -s three gsap three-story-controls
+npm install -s three gsap @kagawa0710/three-story-controls
 ```
 See [here](examples/installation/webpack) for a webpack example.
 
 ### 3. Script tag
-Download [`dist/three-story-controls.min.js`](dist/three-story-controls.min.js) (or use the [CDN link](https://unpkg.com/three-story-controls@latest/dist/three-story-controls.min.js)) and include it in your HTML file with a script tag, along with three.js and gsap. This will expose a global variable `ThreeStoryControls`. See [here](examples/installation/script-src) for more:
+Download [`dist/three-story-controls.min.js`](dist/three-story-controls.min.js)
+or use the CDN build from
+[`@kagawa0710/three-story-controls`](https://unpkg.com/@kagawa0710/three-story-controls@latest/dist/three-story-controls.min.js)
+and include it in your HTML file with a script tag, along with three.js and
+gsap. This will expose a global variable `ThreeStoryControls`. See
+[here](examples/installation/script-src) for more:
   ```html
-  <script src="https://unpkg.com/three@0.137.0/build/three.min.js"></script>
-  <script src="https://unpkg.com/gsap@3.6.1/dist/gsap.min.js"></script>
+  <script src="https://unpkg.com/three@0.185.1/build/three.min.js"></script>
+  <script src="https://unpkg.com/gsap@3.15.0/dist/gsap.min.js"></script>
   <script src='three-story-controls.min.js'></script>
   ```
 
@@ -247,12 +261,17 @@ class MyCustomControls implements BaseControls {
 ---
 
 ## API and demos
-API documentation lives [here](docs/three-story-controls.md), and demos can be viewed [here](https://kagawa0710.github.io/three-story-controls/). Code for the demos lives in [`examples/demos`](examples/demos)
+API documentation lives [here](docs/three-story-controls.md), and demos can be
+viewed [here](https://kagawa0710.github.io/three-story-controls/examples/demos/).
+Code for the demos lives in [`examples/demos`](examples/demos).
 
 ---
 
 ## Contributing
-Contributions are welcome! To develop locally, run `npm install` and then `npm run dev`. The [demos](examples/demos) directory will be watched and served at `http://localhost:8080/examples/demos`, where you can add a new page to test out changes (please ensure test pages are ignored by git). 
+Contributions are welcome. To develop locally, run `npm install` and then
+`npm run dev`. The [demos](examples/demos) directory will be watched and served
+at `http://localhost:8080/examples/demos`, where you can add a new page to test
+out changes.
 
 If you add a new component, be sure to create an example and document it following the [TSDoc](https://tsdoc.org/) standard. The library uses [API Extractor](https://api-extractor.com/), which has [some additional](https://api-extractor.com/pages/tsdoc/doc_comment_syntax/) comment tags available. To extract the documentation, run `npm run docs`. 
 
@@ -262,4 +281,4 @@ If you add a new component, be sure to create an example and document it followi
 
 This is a fork of [nytimes/three-story-controls](https://github.com/nytimes/three-story-controls), originally developed by the Research & Development team at The New York Times. For more information about the original project, visit [rd.nytimes.com](https://rd.nytimes.com).
 
-This fork is maintained by **gawatech** and provided as-is for your own use.
+This fork is maintained by **kagawa0710** and provided as-is for your own use.
