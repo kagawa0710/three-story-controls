@@ -14,7 +14,7 @@ import { CameraRig, PathPointsControls, ThreeDOFControls } from 'three-story-con
 import cameraData from './camera-data.js'
 
 const canvasParent = document.querySelector('.canvas-parent')
-const caption = document.querySelector('.caption p')
+const caption = document.querySelector('.caption-container p')
 
 const scene = new Scene()
 const camera = new PerspectiveCamera(45, canvasParent.clientWidth / canvasParent.clientHeight, 0.1, 10000)
@@ -40,12 +40,16 @@ const rig = new CameraRig(camera, scene)
 const clip = AnimationClip.parse(cameraData.animationClip)
 rig.setAnimationClip(clip)
 rig.setAnimationTime(0)
-caption.innerText = pois[0].caption
+if (caption) {
+  caption.innerText = pois[0].caption
+}
 
 const controls = new PathPointsControls(rig, pois)
 controls.addEventListener('update', (event) => {
   if (event.progress > 0.8) {
-    caption.innerText = pois[event.upcomingIndex].caption
+    if (caption) {
+      caption.innerText = pois[event.upcomingIndex].caption
+    }
   }
 })
 
